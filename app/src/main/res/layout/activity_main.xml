@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditText
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"/>
+
+    <Button
+        android:id="@+id/mandar_comando"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mandar comando"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        />
+    <TextView
+        android:id="@+id/recibir_comando"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/mandar_comando"
+        android:text=""/>
+</RelativeLayout>
