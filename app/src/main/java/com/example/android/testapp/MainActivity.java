@@ -18,18 +18,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-
-
-/*
-
-
-
-                          ~ PABLO ERES UN PEDAZO DE SANTO ~
-
-
-
- */
-
 public class MainActivity extends AppCompatActivity {
 
             String host = "192.168.1.35";
@@ -57,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 ((ChannelExec)channel).setErrStream(System.err);
 
                 InputStream in = channel.getInputStream();
-
+                channel.connect();
 
                 if (in != null) {
                     InputStreamReader inputStreamReader = new InputStreamReader(in, Charset.forName("UTF-8"));
@@ -68,20 +56,6 @@ public class MainActivity extends AppCompatActivity {
                         line = reader.readLine();
                     }
                 }
-                   /* channel.connect();
-                    byte[] tmp = new byte[1024];
-                    while (true){
-                        while (in.available()>0){
-                            int i = in.read(tmp, 0, 1024);
-                            if (i<0)break;
-                            System.out.print(new String(tmp, 0, 1));
-                        }
-                        if (channel.isClosed()){
-                            System.out.println("exit status: " + channel.getExitStatus());
-                            break;
-                        }
-                        try {Thread.sleep(1000);}catch (Exception ee){}
-                    }*/
                 channel.disconnect();
                 session.disconnect();
                 System.out.println("DONE");
@@ -96,18 +70,13 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute (String response){
             TextView responseTextView = (TextView) findViewById(R.id.recibir_comando);
             responseTextView.setText(response);
-
         }
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         // Encuentra la textview que manda el comando.
         Button comando = (Button) findViewById(R.id.mandar_comando);
