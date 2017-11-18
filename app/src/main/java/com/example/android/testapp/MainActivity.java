@@ -1,12 +1,18 @@
 package com.example.android.testapp;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jcraft.jsch.Channel;
@@ -18,6 +24,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
             String host = "192.168.1.35";
@@ -77,10 +86,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         // Encuentra la textview que manda el comando.
-        Button comando = (Button) findViewById(R.id.mandar_comando);
+        ImageView comando = (ImageView) findViewById(R.id.mandar_comando);
 
+        // Detalle de que se remarcque en oscuro al presionarse
+        comando.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        ImageView view = (ImageView) v;
+                        //overlay is black with transparency of 0x77 (119)
+                        view.getDrawable().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
+                        view.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL: {
+                        ImageView view = (ImageView) v;
+                        //clear the overlay
+                        view.getDrawable().clearColorFilter();
+                        view.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
         // Se coloca un onClickListener en ella.
         comando.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,5 +128,35 @@ public class MainActivity extends AppCompatActivity {
                 task.execute(text);
             }
         });
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isPass()) {
+            Intent intent = new Intent(this, LockActivity.class);
+            startActivity(intent);
+        } else {
+            Log.v("MainActivity", "Funciona, has metido la contraseña correcta");
+        }
+    }
+
+    // Definimos "Is_pass"
+    private boolean isPass() {
+        SharedPreferences prefs = getSharedPreferences("PASS_CODE", MODE_PRIVATE);
+        return prefs.getBoolean("is_pass", false);
+    }
+
+   // Al cerrarse la App la key "is_pass" se convierte en negativa para que al salir de la App y
+   // entrar de nuevo te pidan la contraseña.
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences.Editor editor = getSharedPreferences("PASS_CODE", MODE_PRIVATE).edit();
+        editor.putBoolean("is_pass", false);
+        editor.apply();
     }
 }
